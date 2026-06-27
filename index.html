@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<title>METABOLIC METRIC · 数据监测版</title>
+<style>
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#060913;color:#fff;max-width:500px;margin:auto;padding:15px}
+.card{background:#0b132b;border:1px solid #1c2541;border-radius:16px;padding:16px;margin:12px 0;box-shadow: 0 4px 12px rgba(0,0,0,0.3);}
+h1{text-align:center;font-size:1.4rem;background:linear-gradient(135deg,#fff,#94a3b8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;} 
+h2{margin:0 0 12px;font-size:1rem;color:#00b4d8;}
+input,select{background:#1c2541;color:#fff;border:1px solid #3a4d7c;border-radius:8px;padding:8px;width:75px;text-align:center;outline:none;}
+input:focus{border-color:#3a86ff;}
+table{width:100%;border-collapse:collapse;font-size:0.85rem;} td,th{padding:8px;border-bottom:1px solid #1c2541}
+.bar{display:flex;height:10px;border-radius:5px;overflow:hidden;background:#222;margin-bottom:12px;}
+.bar div:nth-child(1){background:#ff006e}
+.bar div:nth-child(2){background:#ffbe0b}
+.bar div:nth-child(3){background:#00b4d8}
+button{background:#3a86ff;color:#fff;border:none;padding:12px;width:100%;border-radius:10px;font-weight:bold;cursor:pointer;font-size:0.9rem;}
+button:active{transform:scale(0.98);}
+.warn{color:#ff006e;font-weight:bold;} .ok{color:#38b000;font-weight:bold;}
+.log-row{padding:10px 0;border-bottom:1px solid #1c2541;font-size:0.75rem;display:flex;justify-content:space-between;align-items:center;}
+.pure-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+.pure-badge { background: rgba(56, 176, 0, 0.1); border: 1px solid rgba(56, 176, 0, 0.2); border-radius: 12px; padding: 10px; text-align: center; font-size: 0.75rem; }
+.timeline { border-left: 1.5px solid #1c2541; padding-left: 14px; margin-left: 6px; font-size: 0.8rem; }
+.time-node { position: relative; margin-bottom: 14px; }
+.time-node:last-child { margin-bottom: 0; }
+.time-node::before { content: ''; position: absolute; width: 6px; height: 6px; background: #0b132b; border: 2px solid #3a86ff; border-radius: 50%; left: -19px; top: 4px; }
+</style>
+</head>
+<body>
+<h1>📊 METABOLIC METRIC PRO</h1>
+
+<div class="card">
+<h2>🎯 身体动态指标设置（手动输入 Fitbit Air 今日数值）</h2>
+<table style="text-align:left;">
+ <tr>
+  <td>当前体重: <input id=w value="83.0"> kg</td>
+  <td>目标体重: <input id=t value="68.0"> kg</td>
+ </tr>
+ <tr>
+  <td>今日TDEE: <input id=tdee value="1776"> kcal</td>
+  <td>优质预算: <input id=budget value="1426" readonly style="background:#111a36; color:#94a3b8;"> kcal</td>
+ </tr>
+</table>
+</div>
+
+<div class="card">
+<h2>🥗 动态营养 (30/25/45 比例 控制)</h2>
+<div class="bar"><div id=b1></div><div id=b2></div><div id=b3></div></div>
+<table>
+<tr><th>营养素</th><th>今日目标</th><th>实际摄入打卡</th></tr>
+<tr><td>蛋白质 (P)</td><td id=target-pro style="color:#ff006e;font-weight:bold;">136g</td><td><input id=pro value=136> g</td></tr>
+<tr><td>优质脂肪 (F)</td><td id=target-fat style="color:#ffbe0b;font-weight:bold;">40g</td><td><input id=fat value=40> g</td></tr>
+<tr><td>干净碳水 (C)</td><td id=target-carb style="color:#00b4d8;font-weight:bold;">130g</td><td><input id=carb value=130> g</td></tr>
+<tr><td>膳食纤维</td><td>25g</td><td><input id=fiber value=25> g</td></tr>
+<tr><td>每日饮水</td><td>4000ml</td><td><input id=water value=3000> ml</td></tr>
+</table>
+<p id=macro style="font-size:0.75rem; color:#94a3b8; margin-top:10px; text-align:center;"></p>
+</div>
+
+<div class="card">
+<h2>⏰ 三餐时机与补剂卡点</h2>
+<div class="timeline">
+ <div class="time-node">
+  <div style="font-weight:bold;">07:30 - 08:00 第一餐 [晨间餐]</div>
+  <div style="color:#94a3b8; font-size:0.75rem; margin-top:2px;">
+   主食、精益蛋白与高纤蔬菜的温和组合（允许水果轻量化代餐）。
+  </div>
+ </div>
+ <div class="time-node">
+  <div style="font-weight:bold;">11:30 - 12:00 第二餐 [午间餐]</div>
+  <div style="color:#94a3b8; font-size:0.75rem; margin-top:2px;">
+   建议摄入全天较多的干净碳水支撑下午状态。正餐肉类脂肪环境极佳，<b>适合在此随餐补充：1粒 rTG鱼油 + 1片综合维他命 + 1粒叶黄素</b>。
+  </div>
+ </div>
+ <div class="time-node">
+  <div style="font-weight:bold;">下午 / 晚间 第三餐 [最后一餐]</div>
+  <div style="color:#94a3b8; font-size:0.75rem; margin-top:2px;">
+   聚焦精益肉类和干净碳水的搭配，建议适当选择清淡控盐的方式，有利于避免多余水肿。
+  </div>
+ </div>
+</div>
+</div>
+
+<div class="card">
+<h2>☕🥤 成瘾因素控制</h2>
+咖啡杯数: <input id=caffeine value=2> 杯 <span id=caf></span><br><br>
+无糖可乐量: <input id=cola value=330> ml <span id=col></span>
+</div>
+
+<div class="card">
+<h2>🏃 每日运动恢复同步</h2>
+全天步数 <input id=steps value=3635> ｜ 力量训练 <input id=gym value=0> min<br><br>
+有氧/游泳 <input id=cardio value=0> min ｜ 睡眠时长 <input id=sleep value=7.5> h
+</div>
+
+<div class="card">
+ <p id=score style="text-align:center; margin-bottom:10px; font-size:0.85rem;"></p>
+ <button onclick="saveDay()">💾 归档今日监测数据</button>
+</div>
+
+<div class="card">
+<h2>📈 历史趋势数据总结</h2>
+<div id=history></div>
+</div>
+
+<div class="card">
+<h2>🚭🍺 零烟酒纯净生活底线</h2>
+<div class="pure-panel">
+ <div class="pure-badge">
+  <span style="color:#94a3b8">🚭 烟草吸入</span><br>
+  <b style="color:#38b000; font-size:0.95rem;">0 支 / 纯净</b>
+ </div>
+ <div class="pure-badge" style="background: rgba(0, 180, 216, 0.1); border-color: rgba(0, 180, 216, 0.2);">
+  <span style="color:#94a3b8">🍺 酒精热量常数</span><br>
+  <b style="color:#00b4d8; font-size:0.95rem;">1g ≈ 7 kcal</b>
+ </div>
+</div>
+</div>
+
+<script>
+function runMetabolicEngine(){
+ let currentWeight = +w.value || 83;
+ let targetW = +t.value || 68;
+ let currentTdee = +tdee.value || 1776;
+
+ let deficit = 350;
+ if (currentTdee > 2200) deficit = 500;
+ if (currentTdee > 2600) deficit = 600;
+ 
+ let calculatedBudget = Math.round(currentTdee - deficit);
+ let bmrLimit = Math.round((10 * currentWeight) + (6.25 * 168) - (5 * 36) + 5) * 0.9;
+ if (calculatedBudget < bmrLimit) {
+  calculatedBudget = Math.round(bmrLimit);
+ }
+ budget.value = calculatedBudget;
+
+ let pG = Math.round(targetW * 2.0); 
+ let fG = Math.round((calculatedBudget * 0.25) / 9); 
+ let cG = Math.round((calculatedBudget - (pG * 4) - (fG * 9)) / 4); 
+ if(cG < 40) cG = 40;
+
+ document.getElementById('target-pro').innerText = pG + 'g';
+ document.getElementById('target-fat').innerText = fG + 'g';
+ document.getElementById('target-carb').innerText = cG + 'g';
+ 
+ let totalActual = (pG*4) + (fG*9) + (cG*4);
+ b1.style.width = Math.round((pG*4)/totalActual*100) + '%';
+ b2.style.width = Math.round((fG*9)/totalActual*100) + '%';
+ b3.style.width = (100 - parseFloat(b1.style.width) - parseFloat(b2.style.width)) + '%';
+}
+
+function calc(){
+ runMetabolicEngine();
+ let p=+pro.value*4,f=+fat.value*9,c=+carb.value*4;
+ let total=p+f+c || 1;
+ macro.innerHTML=`今日吃进热量：${p+f+c} kcal（蛋白${Math.round(p/total*100)}% ｜ 脂肪${Math.round(f/total*100)}% ｜ 碳水${Math.round(c/total*100)}%）`;
+ 
+ caf.className=(+caffeine.value
+>4?'warn':'ok');
+ caf.innerText=(+caffeine.value>4?'⚠️超标':'🟢正常');
+ col.className=(+cola.value>500?'warn':'ok');
+ col.innerText=(+cola.value>500?'⚠️超标':'🟢正常');
+ 
+ let s = 100;
+ let failTriggered = false;
+ let failReason = "";
+
+ if (+water.value < 3000) { failTriggered = true; failReason = "水分严重赤字"; }
+ if (+sleep.value < 6.5) { failTriggered = true; failReason = "睡眠极度剥夺"; }
+ if (+caffeine.value > 4) { failTriggered = true; failReason = "咖啡因严重超标"; }
+ if (+cola.value > 500) { failTriggered = true; failReason = "无糖可乐过量"; }
+
+ if (!failTriggered) {
+  if (+steps.value < 8000) s -= 15;
+  let targetP = parseFloat(document.getElementById('target-pro').innerText);
+  if (+pro.value < targetP * 0.85) s -= 15;
+  if ((p+f+c) > (+budget.value + 150)) s -= 20;
+ }
+
+ if (failTriggered) {
+  s = 55; 
+  score.innerHTML = `今日状态评分：<b class="warn" style="font-size:1.2rem;">${s}分 (不及格)</b><br><span style='color:#ef4444;font-size:0.75rem;'>触犯红线：${failReason}</span>`;
+ } else {
+  let scoreClass = s >= 85 ? 'ok' : 'warn';
+  let statusText = s >= 85 ? '🟢 优秀' : '🟡 合格';
+  score.innerHTML = `今日状态评分：<b class="${scoreClass}" style="font-size:1.1rem;">${s} 分</b> ｜ 状态：${statusText}`;
+ }
+}
+
+function saveInputs(){
+ [...document.querySelectorAll('input')].forEach(i=>localStorage.setItem('v3_'+i.id,i.value));
+}
+
+function loadInputs(){
+ [...document.querySelectorAll('input')].forEach(i=>{
+  if(localStorage.getItem('v3_'+i.id))i.value=localStorage.getItem('v3_'+i.id);
+  i.oninput=()=>{saveInputs();calc();}
+ });
+}
+
+function saveDay(){
+ let logs=JSON.parse(localStorage.getItem('health_logs_v3')||'[]');
+ let d=new Date().toISOString().slice(0,10);
+ logs=logs.filter(x=>x.date!=d);
+ logs.push({
+   date:d,weight:w.value,pro:pro.value,fat:fat.value,carb:carb.value,
+   caffeine:caffeine.value,cola:cola.value,steps:steps.value
+ });
+ localStorage.setItem('health_logs_v3',JSON.stringify(logs));
+ draw();
+ alert('📥 记录成功归档');
+}
+
+function draw(){
+ let logs=JSON.parse(localStorage.getItem('health_logs_v3')||'[]').reverse();
+ history.innerHTML=logs.map(x=>
+ `<div class="log-row">
+  <div><b>${x.date}</b> ｜ ⚖️${x.weight}kg ｜ 🚶${x.steps}步</div>
+  <div style="color:#94a3b8">P${x.pro}/F${x.fat}/C${x.carb}</div>
+ </div>`).join('');
+}
+
+loadInputs();calc();draw();
+</script>
+
+</body>
+</html>
